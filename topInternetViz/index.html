@@ -21,12 +21,27 @@
 
     <script>
     
-    d3.csv('top20Internet.csv', function (data) {
+    const parseDataRow = function (dataRow) {
 
-        data.forEach(function (row) {
+        // We only require a subset of the data.
+        const netUsersWithCommas =
+            dataRow['Internet Users 31 Dec 2017'];
+        
+        return {
+            country: dataRow['Country or Region'],
+            // Bad practice but works with this data set ...
+            netUsers: +netUsersWithCommas.replace(/,/g, '')
+        };
+    };
 
-            console.log(row);
-        });
+    const top5 = function (list) {
+
+        return list.slice(0, 5);
+    };
+
+    d3.csv('top20Internet.csv', parseDataRow, function (data) {
+
+        console.log(top5(data));
     });
     
     </script>
