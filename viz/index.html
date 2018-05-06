@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Botanic Viz</title>
+
+</head>
+<body>
+    
+    <h3>Botanic Viz</h3>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script>
+    
+        const rowInit = dataRow => {
+
+            // Header:
+            // sepalLength,sepalWidth,petalLength,petalWidth,species
+            dataRow.sepalLength = +dataRow.sepalLength;
+            dataRow.sepalWidth = +dataRow.sepalWidth;
+            dataRow.petalLength = +dataRow.petalLength;
+            dataRow.petalWidth = +dataRow.petalWidth;
+
+            return dataRow;
+        };
+
+        d3.csv('iris.csv', rowInit, data => {
+
+            console.log(data);
+        });
+
+    </script>
+
+</body>
+</html>

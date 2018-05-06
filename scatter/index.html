@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Botanic Viz - Scatter Plot</title>
+
+    <style>
+
+        h1, h2, h3, h4, h5, p, div, span
+        {
+            font-family: sans-serif;
+        }
+
+        .tick, .legendCells
+        {
+            font-size: 28pt;
+            font-family: sans-serif;
+        }
+        
+        .axis-label
+        {
+            font-size: 42pt;
+            fill: black;
+            font-family: sans-serif;
+        }
+
+    </style>
+
+</head>
+<body>
+    
+    <h1>Botanic Viz - Scatter Plot</h1>
+
+    <svg width="960" height="500"></svg>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <!-- Aids with the creation of legends -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+
+    <script>
+    
+        const margin = { left: 110, right: 250, top: 50, bottom: 125 };
+
+        // Circle radius
+        const r = 10;
+
+        // Helper accessors and axis labes
+
+        const xLabel = 'Sepal Length';
+
+        const xValue = function (d) {
+            return d.sepalLength;
+        };
+
+        const yLabel = 'Petal Length';
+
+        const yValue = function (d) {
+            return d.petalLength;
+        };
+
+        const colorLabel = 'Species';
+
+        const colorValue = function (d) {
+            return d.species;
+        }
+
+        // The data values will be scaled linearly in x and y.
+        const xScale = d3.scaleLinear();
+        const yScale = d3.scaleLinear();
+
+        // There will also be an ordinal scale to differentiate
+        // species by color in the plot.
+        const colorScale =
+            d3
+            .scaleOrdinal()
+            //.range(['red', 'green', 'blue']);
+            //.range(d3.schemeAccent);
+            .range(d3.schemeDark2);
+
+        const svg = d3.select('svg');
+
+        const width = +svg.attr('width');
+        const height = +svg.attr('height');
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const group =
+            svg
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(' + margin.left + ' ' + margin.top + ')';
+            });
+
+        // Separate child group for the x-axis
+        // We also need to move (translate) it down to the bottom.
+        const xAxisG =
+            group
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(0 ' + innerHeight + ')';
+            });
+
+        // Separate child group for the y-axis
+        const yAxisG =
+            group
+            .append('g');
+
+        // Separate child group for color legend
+        const colorG =
+            group
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(' + (innerWidth + 30) + ' 145)';
+            })
+        
+        // Add labels to the axes
+
+        xAxisG
+            .append('text')
+            .text(xLabel)
+            .attr('class', 'axis-label')
+            .attr('transform', function (d) {
+                return 'translate(' + (innerWidth / 2) + ' ' + 100 + ')';
+            })
+            .style('text-anchor', 'middle');
+
+        yAxisG
+            .append('text')
+            .text(yLabel)
+            .attr('class', 'axis-label')
+            .attr('x', -innerHeight / 2)
+            .attr('y', -60)
+            .attr('transform', function (d) {
+                return 'rotate(-90)';
+            })
+            .style('text-anchor', 'middle');
+
+        colorG
+            .append('text')
+            .text(colorLabel)
+            .attr('class', 'axis-label')
+            .attr('x', -12)
+            .attr('y', -40);
+
+        // Define x-axis legend for our plot
+        const xAxis =
+            d3
+            .axisBottom()
+            .scale(xScale)
+            .tickPadding(15)
+            .tickSize(-innerHeight);
+
+        // Define y-axis legend for our plot
+        // Only show 5 tick marks.
+        const yAxis =
+            d3
+            .axisLeft()
+            .scale(yScale)
+            .ticks(5)
+            .tickPadding(15)
+            .tickSize(-innerWidth);
+
+        // Define the color legend for our plot
+        const colorLegend =
+            d3
+            .legendColor()
+            .scale(colorScale)
+            .shape('circle');
+        
+        const rowInit = function (dataRow) {
+
+            // Header:
+            // sepalLength,sepalWidth,petalLength,petalWidth,species
+            dataRow.sepalLength = +dataRow.sepalLength;
+            dataRow.sepalWidth = +dataRow.sepalWidth;
+            dataRow.petalLength = +dataRow.petalLength;
+            dataRow.petalWidth = +dataRow.petalWidth;
+
+            return dataRow;
+        };
+
+        d3.csv('iris.csv', rowInit, function (data) {
+
+            xScale
+                .domain(d3.extent(data, xValue)
+                /*[
+                    d3.min(data, xValue),
+                    d3.max(data, xValue)
+                ]*/
+                )
+                .range([
+                    0,
+                    innerWidth
+                ])
+                .nice();
+            
+            yScale
+                .domain(d3.extent(data, yValue)
+                /*[
+                    d3.min(data, yValue),
+                    d3.max(data, yValue)
+                ]*/
+                )
+                // Invert y-axis to be like in math (computer screen has
+                // (top, left) as (0, 0) with y getting positive downwards)
+                .range([
+                    innerHeight,
+                    0
+                ])
+                .nice();
+            
+            // If necessary, this is how you could set the domain for an
+            // ordinal scale explicitely.
+            colorScale
+                .domain(data.map(colorValue).reverse());
+            
+            group
+               .selectAll('circle')
+               .data(data)
+               .enter()
+               .append('circle')
+               .attr('r', r)
+               .attr('cx', function (d) {
+                    return xScale(xValue(d));
+               })
+               .attr('cy', function (d) {
+                    return yScale(yValue(d));
+               })
+               .attr('fill', function (d) {
+                   return colorScale(colorValue(d));
+               });
+            
+            // Render the x-axis legend
+            xAxisG.call(xAxis);
+
+            // Render the y-axis legend
+            yAxisG.call(yAxis);
+
+            // Render the color legend
+            // and finetune the shape-to-text-alignment
+            colorG.call(colorLegend)
+               .selectAll('.legendCells .cell .label')
+               .attr('dy', '0.14em');
+
+            console.log(data);
+        });
+
+    </script>
+
+</body>
+</html>

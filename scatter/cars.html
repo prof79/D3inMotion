@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Scatter Plot - Cars</title>
+
+    <style>
+
+        h1, h2, h3, h4, h5, p, div, span
+        {
+            font-family: sans-serif;
+        }
+
+        .tick
+        {
+            font-size: 28pt;
+        }
+        
+        .axis-label
+        {
+            font-size: 48pt;
+            fill: black;
+            font-family: sans-serif;
+        }
+
+    </style>
+
+</head>
+<body>
+    
+    <h1>Scatter Plot - Cars</h1>
+
+    <svg width="960" height="500"></svg>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script>
+    
+        const margin = { left: 125, right: 50, top: 50, bottom: 125 };
+
+        // Circle radius
+        const r = 10;
+
+        // Helper accessors and axis labes
+
+        const xLabel = 'Horsepower';
+
+        const xValue = function(d) {
+            return d.horsepower;
+        };
+
+        const yLabel = 'Acceleration';
+
+        const yValue = function(d) {
+            return d.acceleration;
+        };
+
+        // The data values will be scaled linearly in x and y.
+        const xScale = d3.scaleLinear();
+        const yScale = d3.scaleLinear();
+
+        const svg = d3.select('svg');
+
+        const width = +svg.attr('width');
+        const height = +svg.attr('height');
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const group =
+            svg
+            .append('g')
+            .attr('transform', function(d) {
+                return 'translate(' + margin.left + ' ' + margin.top + ')';
+            });
+
+        // Separate child group for the x-axis
+        // We also need to move (translate) it down to the bottom.
+        const xAxisG =
+            group
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(0 ' + innerHeight + ')';
+            });
+
+        // Separate child group for the y-axis
+        const yAxisG =
+            group
+            .append('g')
+            ;
+
+        // Add labels to the axes
+
+        xAxisG
+        .append('text')
+        .text(xLabel)
+        .attr('class', 'axis-label')
+        .attr('transform', function (d) {
+            return 'translate(' + (innerWidth / 2) + ' ' + 110 + ')';
+        })
+        .style('text-anchor', 'middle');
+
+        yAxisG
+        .append('text')
+        .text(yLabel)
+        .attr('class', 'axis-label')
+        .attr('x', -innerHeight / 2)
+        .attr('y', -66)
+        .attr('transform', function (d) {
+            return 'rotate(-90)';
+        })
+        .style('text-anchor', 'middle');
+
+        // Define x-axis legend for our plot
+        const xAxis =
+            d3
+            .axisBottom()
+            .scale(xScale)
+            .tickPadding(15)
+            .tickSize(-innerHeight);
+
+        // Define y-axis legend for our plot
+        // Only show 5 tick marks.
+        const yAxis =
+            d3
+            .axisLeft()
+            .scale(yScale)
+            .ticks(5)
+            .tickPadding(15)
+            .tickSize(-innerWidth);
+
+        const rowInit = function (dataRow) {
+
+            // Header & Sample Data:
+            // mpg,cylinders,displacement,horsepower,weight,acceleration,year,origin,name
+            // 18,8,307,130,3504,12,1970,USA,chevrolet chevelle malibu
+            dataRow.mpg = +dataRow.mpg;
+            dataRow.cylinders = +dataRow.cylinders;
+            dataRow.displacement = +dataRow.displacement;
+            dataRow.horsepower = +dataRow.horsepower;
+            dataRow.weight = +dataRow.weight;
+            dataRow.acceleration = +dataRow.acceleration;
+            dataRow.year = +dataRow.year;
+
+            return dataRow;
+        };
+
+        d3.csv('cars.csv', rowInit, function (data) {
+
+            xScale
+                .domain(d3.extent(data, xValue)
+                /*[
+                    d3.min(data, xValue),
+                    d3.max(data, xValue)
+                ]*/
+                )
+                .range([
+                    0,
+                    innerWidth
+                ])
+                .nice();
+            
+            yScale
+                .domain(d3.extent(data, yValue)
+                /*[
+                    d3.min(data, yValue),
+                    d3.max(data, yValue)
+                ]*/
+                )
+                // Invert y-axis to be like in math (computer screen has
+                // (top, left) as (0, 0) with y getting positive downwards)
+                .range([
+                    innerHeight,
+                    0
+                ])
+                .nice();
+            
+            group
+               .selectAll('circle')
+               .data(data)
+               .enter()
+               .append('circle')
+               .attr('cx', function(d) {
+                    return xScale(xValue(d));
+               })
+               .attr('cy', function(d) {
+                    return yScale(yValue(d));
+               })
+               .attr('r', r);
+            
+            // Render the x-axis legend
+            xAxisG.call(xAxis);
+
+            // Render the y-axis legend
+            yAxisG.call(yAxis);
+
+            console.log(data);
+        });
+
+    </script>
+
+</body>
+</html>
