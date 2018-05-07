@@ -74,7 +74,8 @@
         const xScale =
             d3
             .scaleBand()
-            .padding(0.2);
+            .paddingOuter(0.1)
+            .paddingInner(0.2);
         
         const yScale = d3.scaleLinear();
 
@@ -207,8 +208,8 @@
                 .attr('height', function (d) {
                     return innerHeight - yScale(yValue(d));
                 })
-                .attr('fill', 'steelblue')
-                .attr('fill-opacity', 0.6);
+                .attr('fill', 'steelblue');
+                //.attr('fill-opacity', 0.6);
             
             // Render the x-axis legend
             xAxisG
