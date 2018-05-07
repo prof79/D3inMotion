@@ -119,13 +119,20 @@
             })
             .style('text-anchor', 'middle');
 
+        // x tick count
+        const xTicks = 5;
+
         // Define x-axis legend for our plot
         const xAxis =
             d3
             .axisBottom()
             .scale(xScale)
+            .ticks(xTicks)
             .tickPadding(15)
             .tickSize(-innerHeight);
+
+        // y tick count
+        const yTicks = 5;
 
         // Define y-axis legend for our plot
         // Only show 5 tick marks.
@@ -133,7 +140,7 @@
             d3
             .axisLeft()
             .scale(yScale)
-            .ticks(5)
+            .ticks(yTicks)
             .tickPadding(15)
             .tickSize(-innerWidth);
         
@@ -146,7 +153,9 @@
             })
             .y(function (d) {
                 return yScale(yValue(d));
-            });
+            })
+            // Make a smoother line (path)
+            .curve(d3.curveBasis);
         
         const rowInit = function (dataRow) {
 
@@ -165,8 +174,7 @@
                 .range([
                     0,
                     innerWidth
-                ])
-                .nice();
+                ]);
             
             yScale
                 .domain(d3.extent(data, yValue))
@@ -176,26 +184,13 @@
                     innerHeight,
                     0
                 ])
-                .nice();
+                .nice(yTicks);
                         
-            group
-               .selectAll('circle')
-               .data(data)
-               .enter()
-               .append('circle')
-               .attr('r', r)
-               .attr('cx', function (d) {
-                    return xScale(xValue(d));
-               })
-               .attr('cy', function (d) {
-                    return yScale(yValue(d));
-               })
-               .attr('opacity', 0.6);
-            
             group
                .append('path')
                .attr('fill', 'none')
-               .attr('stroke', 'black')
+               .attr('stroke', 'steelblue')
+               .attr('stroke-width', 4)
                .attr('d', line(data));
 
             // Render the x-axis legend
