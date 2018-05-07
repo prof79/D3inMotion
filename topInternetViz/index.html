@@ -49,7 +49,7 @@
     <script>
 
         // Margins
-        const margin = { left: 120, right: 100, top: 50, bottom: 100 };
+        const margin = { left: 100, right: 50, top: 50, bottom: 100 };
 
         // Circle radius
         const r = 10;
@@ -74,8 +74,7 @@
         const xScale =
             d3
             .scaleBand()
-            .paddingOuter(0.1)
-            .paddingInner(0.2);
+            .padding(0.2);
         
         const yScale = d3.scaleLinear();
 
@@ -109,21 +108,21 @@
 
         // Add labels to the axes and position them
 
-        xAxisG
+        /*xAxisG
             .append('text')
             .text(xLabel)
             .attr('class', 'axis-label')
             .attr('transform', function (d) {
-                return 'translate(' + (innerWidth / 2) + ' ' + 65 + ')';
+                return 'translate(' + (innerWidth / 2) + ' ' + 120 + ')';
             })
-            .style('text-anchor', 'middle');
+            .style('text-anchor', 'middle');*/
 
         yAxisG
             .append('text')
             .text(yLabel)
             .attr('class', 'axis-label')
             .attr('x', -innerHeight / 2)
-            .attr('y', -80)
+            .attr('y', -70)
             .attr('transform', function (d) {
                 return 'rotate(-90)';
             })
@@ -172,8 +171,6 @@
 
         d3.csv('top20Internet.csv', parseDataRow, function (data) {
 
-            data = top5(data);
-
             xScale
                 .domain(data.map(xValue))
                 .range([
@@ -216,6 +213,11 @@
                 .call(xAxis)
                 .selectAll('.tick line')
                 .remove();
+            xAxisG
+                .selectAll('.tick text')
+                .attr('text-anchor', 'end')
+                .attr('alignment-baseline', 'middle')
+                .attr('transform', 'rotate(-45) translate(-10 -10)');
 
             // Render the y-axis legend
             yAxisG.call(yAxis);
