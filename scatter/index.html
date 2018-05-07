@@ -15,16 +15,22 @@
             font-family: sans-serif;
         }
 
-        .tick, .legendCells
+        .tick text, .legendCells
         {
             font-size: 28pt;
             font-family: sans-serif;
+            fill: #484848;
         }
         
+        .tick line
+        {
+            stroke: #a8a8a8;
+        }
+
         .axis-label
         {
             font-size: 42pt;
-            fill: black;
+            fill: #aa7;
             font-family: sans-serif;
         }
 
@@ -233,7 +239,8 @@
                })
                .attr('fill', function (d) {
                    return colorScale(colorValue(d));
-               });
+               })
+               .attr('opacity', 0.6);
             
             // Render the x-axis legend
             xAxisG.call(xAxis);
