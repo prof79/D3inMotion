@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>Top 5 Internet Users Visualization</title>
+    <title>Top 20 Internet Users Visualization</title>
 
     <style>
 
@@ -40,7 +40,7 @@
 
 <body>
     
-    <h1>Top 5 Internet Users Visualization</h1>
+    <h1>Top 20 Internet Users Visualization</h1>
 
     <svg width="960" height="500"></svg>
 
@@ -49,34 +49,31 @@
     <script>
 
         // Margins
-        const margin = { left: 100, right: 50, top: 50, bottom: 100 };
-
-        // Circle radius
-        const r = 10;
+        const margin = { left: 144, right: 50, top: 20, bottom: 70 };
 
         // Helper accessors and axis labes
 
-        const xLabel = 'Countries';
+        const xLabel = 'Internet Users';
 
         const xValue = function (d) {
-            return d.country;
-        };
-
-        const yLabel = 'Internet Users';
-
-        const yValue = function (d) {
             return d.netUsers;
         };
 
-        // The data values will be scaled linearly in y.
-        // Countries (x-axis) will be spaced evenly so we
+        const yLabel = 'Countries';
+
+        const yValue = function (d) {
+            return d.country;
+        };
+
+        // The data values will be scaled linearly in x.
+        // Countries (y-axis) will be spaced evenly so we
         // use a point scale.
-        const xScale =
+        const yScale =
             d3
             .scaleBand()
             .padding(0.2);
         
-        const yScale = d3.scaleLinear();
+        const xScale = d3.scaleLinear();
 
         const svg = d3.select('svg');
 
@@ -100,56 +97,56 @@
             .attr('transform', function (d) {
                 return 'translate(0 ' + innerHeight + ')';
             });
-
+        
         // Separate child group for the y-axis
         const yAxisG =
             group
             .append('g');
-
+        
         // Add labels to the axes and position them
 
-        /*xAxisG
+        xAxisG
             .append('text')
             .text(xLabel)
             .attr('class', 'axis-label')
             .attr('transform', function (d) {
-                return 'translate(' + (innerWidth / 2) + ' ' + 120 + ')';
+                return 'translate(' + (innerWidth / 2) + ' ' + 60 + ')';
             })
-            .style('text-anchor', 'middle');*/
+            .style('text-anchor', 'middle');
 
-        yAxisG
+        /*yAxisG
             .append('text')
             .text(yLabel)
             .attr('class', 'axis-label')
             .attr('x', -innerHeight / 2)
-            .attr('y', -70)
+            .attr('y', -120)
             .attr('transform', function (d) {
                 return 'rotate(-90)';
             })
-            .style('text-anchor', 'middle');
+            .style('text-anchor', 'middle');*/
+
+        // Maximum number of ticks in y direction
+        const xTicks = 10;
 
         // Define x-axis legend for our plot
+        // Only show 5 tick marks.
         const xAxis =
             d3
             .axisBottom()
             .scale(xScale)
+            .ticks(xTicks)
             .tickPadding(15)
-            .tickSize(-innerHeight);
-
-        // Maximum number of ticks in y direction
-        const yTicks = 10;
-
+            .tickSize(-innerHeight)
+            .tickFormat(d3.format('.0s'));
+        
         // Define y-axis legend for our plot
-        // Only show 5 tick marks.
         const yAxis =
             d3
             .axisLeft()
             .scale(yScale)
-            .ticks(yTicks)
             .tickPadding(15)
-            .tickSize(-innerWidth)
-            .tickFormat(d3.format('.0s'));
-
+            .tickSize(-innerWidth);
+        
         const parseDataRow = function (dataRow) {
 
             // We only require a subset of the data.
@@ -164,29 +161,24 @@
             };
         };
 
-        const top5 = function (list) {
-
-            return list.slice(0, 5);
-        };
-
         d3.csv('top20Internet.csv', parseDataRow, function (data) {
 
             xScale
-                .domain(data.map(xValue))
-                .range([
-                    0,
-                    innerWidth
-                ]);
-            
-            yScale
-                .domain([0, d3.max(data, yValue)])
+                .domain([0, d3.max(data, xValue)])
                 // Invert y-axis to be like in math (computer screen has
                 // (top, left) as (0, 0) with y getting positive downwards)
                 .range([
-                    innerHeight,
-                    0
+                    0,
+                    innerWidth
                 ])
-                .nice(yTicks);
+                .nice(xTicks);
+            
+            yScale
+                .domain(data.map(yValue))
+                .range([
+                    0,
+                    innerHeight
+                ]);
                 
             group
                 .selectAll('rect')
@@ -194,33 +186,28 @@
                 .enter()
                 .append('rect')
                 .attr('x', function (d) {
-                        return xScale(xValue(d));
+                    return 0;
                 })
                 .attr('y', function (d) {
-                        return yScale(yValue(d));
+                    return yScale(yValue(d));
                 })
                 .attr('width', function (d) {
-                    return xScale.bandwidth();
+                    return xScale(xValue(d));
                 })
                 .attr('height', function (d) {
-                    return innerHeight - yScale(yValue(d));
+                    return yScale.bandwidth();
                 })
                 .attr('fill', 'steelblue');
                 //.attr('fill-opacity', 0.6);
             
+            // Render the y-axis legend
+            xAxisG.call(xAxis);
+            
             // Render the x-axis legend
-            xAxisG
-                .call(xAxis)
+            yAxisG
+                .call(yAxis)
                 .selectAll('.tick line')
                 .remove();
-            xAxisG
-                .selectAll('.tick text')
-                .attr('text-anchor', 'end')
-                .attr('alignment-baseline', 'middle')
-                .attr('transform', 'rotate(-45) translate(-10 -10)');
-
-            // Render the y-axis legend
-            yAxisG.call(yAxis);
 
             console.log(data);
         });
