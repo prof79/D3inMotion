@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Africa Population Growth</title>
+
+    <style>
+
+        h1, h2, h3, h4, h5, p, div, span
+        {
+            font-family: sans-serif;
+        }
+
+        .tick text
+        {
+            font-size: 16pt;
+            font-family: sans-serif;
+        }
+        
+        .tick line
+        {
+            stroke: #a8a8a8;
+        }
+
+        .axis-label
+        {
+            font-size: 28pt;
+            font-family: sans-serif;
+            fill: black;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    
+    <h1>Africa Population Growth</h1>
+
+    <svg width="960" height="500"></svg>
+
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+
+    <script>
+    
+        const margin = { left: 110, right: 70, top: 50, bottom: 100 };
+
+        // Circle radius
+        const r = 3;
+
+        // Helper accessors and axis labes
+
+        const xLabel = 'Year';
+
+        const xValue = function (d) {
+            return d.year;
+        };
+
+        const yLabel = 'Population';
+
+        const yValue = function (d) {
+            return d.population;
+        };
+
+        // The data values will be scaled linearly in x and y.
+        const xScale = d3.scaleTime();
+        const yScale = d3.scaleLinear();
+
+        const svg = d3.select('svg');
+
+        const width = +svg.attr('width');
+        const height = +svg.attr('height');
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
+        const group =
+            svg
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(' + margin.left + ' ' + margin.top + ')';
+            });
+
+        // Separate child group for the x-axis
+        // We also need to move (translate) it down to the bottom.
+        const xAxisG =
+            group
+            .append('g')
+            .attr('transform', function (d) {
+                return 'translate(0 ' + innerHeight + ')';
+            });
+
+        // Separate child group for the y-axis
+        const yAxisG =
+            group
+            .append('g');
+        
+        // Add labels to the axes
+
+        xAxisG
+            .append('text')
+            .text(xLabel)
+            .attr('class', 'axis-label')
+            .attr('transform', function (d) {
+                return 'translate(' + (innerWidth / 2) + ' ' + 80 + ')';
+            })
+            .style('text-anchor', 'middle');
+
+        yAxisG
+            .append('text')
+            .text(yLabel)
+            .attr('class', 'axis-label')
+            .attr('x', -innerHeight / 2)
+            .attr('y', -70)
+            .attr('transform', function (d) {
+                return 'rotate(-90)';
+            })
+            .style('text-anchor', 'middle');
+
+        // x tick count
+        const xTicks = 5;
+
+        // Define x-axis legend for our plot
+        const xAxis =
+            d3
+            .axisBottom()
+            .scale(xScale)
+            .ticks(xTicks)
+            .tickPadding(15)
+            .tickSize(-innerHeight);
+
+        // y tick count
+        const yTicks = 5;
+
+        // Define y-axis legend for our plot
+        // Only show 5 tick marks.
+        const yAxis =
+            d3
+            .axisLeft()
+            .scale(yScale)
+            .ticks(yTicks)
+            .tickPadding(15)
+            .tickSize(-innerWidth)
+            .tickFormat(d3.format('.0s'));
+        
+        // Create a line generator. This is part of d3-shape.
+        const line =
+            d3
+            .line()
+            .x(function (d) {
+                return xScale(xValue(d));
+            })
+            .y(function (d) {
+                return yScale(yValue(d));
+            })
+            // Make a smoother line (path)
+            .curve(d3.curveBasis);
+        
+        const rowInit = function (dataRow) {
+
+            // Header:
+            // year,population
+            dataRow.year = new Date(dataRow.year);
+            dataRow.population = +dataRow.population;
+
+            return dataRow;
+        };
+
+        d3.csv('africa.csv', rowInit, function (data) {
+
+            xScale
+                .domain(d3.extent(data, xValue))
+                .range([
+                    0,
+                    innerWidth
+                ]);
+            
+            yScale
+                .domain(d3.extent(data, yValue))
+                // Invert y-axis to be like in math (computer screen has
+                // (top, left) as (0, 0) with y getting positive downwards)
+                .range([
+                    innerHeight,
+                    0
+                ])
+                .nice(yTicks);
+                        
+            group
+               .append('path')
+               .attr('fill', 'none')
+               .attr('stroke', 'crimson')
+               .attr('stroke-width', 4)
+               .attr('d', line(data));
+
+            // Render the x-axis legend
+            xAxisG.call(xAxis);
+
+            // Render the y-axis legend
+            yAxisG.call(yAxis);
+
+            console.log(data);
+        });
+
+    </script>
+
+</body>
+
+</html>
