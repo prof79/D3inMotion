@@ -74,7 +74,7 @@
         const xScale =
             d3
             .scaleBand()
-            .padding(0.97);
+            .padding(0.2);
         
         const yScale = d3.scaleLinear();
 
@@ -189,20 +189,7 @@
                     0
                 ])
                 .nice(yTicks);
-            
-            group
-                .selectAll('circle')
-                .data(data)
-                .enter()
-                .append('circle')
-                .attr('r', r)
-                .attr('cx', function (d) {
-                        return xScale(xValue(d)) + xScale.bandwidth() / 2;
-                })
-                .attr('cy', function (d) {
-                        return yScale(yValue(d));
-                });
-    
+                
             group
                 .selectAll('rect')
                 .data(data)
@@ -220,6 +207,7 @@
                 .attr('height', function (d) {
                     return innerHeight - yScale(yValue(d));
                 })
+                .attr('fill', 'steelblue')
                 .attr('fill-opacity', 0.6);
             
             // Render the x-axis legend
