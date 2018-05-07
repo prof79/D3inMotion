@@ -24,7 +24,7 @@
             
             .tick line
             {
-                stroke: #777;
+                stroke: #ccc;
             }
 
             .axis-label
@@ -71,7 +71,11 @@
         // The data values will be scaled linearly in y.
         // Countries (x-axis) will be spaced evenly so we
         // use a point scale.
-        const xScale = d3.scalePoint();
+        const xScale =
+            d3
+            .scaleBand()
+            .padding(0.97);
+        
         const yScale = d3.scaleLinear();
 
         const svg = d3.select('svg');
@@ -133,7 +137,7 @@
             .tickSize(-innerHeight);
 
         // Maximum number of ticks in y direction
-        const yTicks = 5;
+        const yTicks = 10;
 
         // Define y-axis legend for our plot
         // Only show 5 tick marks.
@@ -177,7 +181,7 @@
                 ]);
             
             yScale
-                .domain(d3.extent(data, yValue))
+                .domain([0, d3.max(data, yValue)])
                 // Invert y-axis to be like in math (computer screen has
                 // (top, left) as (0, 0) with y getting positive downwards)
                 .range([
@@ -193,14 +197,36 @@
                 .append('circle')
                 .attr('r', r)
                 .attr('cx', function (d) {
-                        return xScale(xValue(d));
+                        return xScale(xValue(d)) + xScale.bandwidth() / 2;
                 })
                 .attr('cy', function (d) {
                         return yScale(yValue(d));
                 });
     
+            group
+                .selectAll('rect')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('x', function (d) {
+                        return xScale(xValue(d));
+                })
+                .attr('y', function (d) {
+                        return yScale(yValue(d));
+                })
+                .attr('width', function (d) {
+                    return xScale.bandwidth();
+                })
+                .attr('height', function (d) {
+                    return innerHeight - yScale(yValue(d));
+                })
+                .attr('fill-opacity', 0.6);
+            
             // Render the x-axis legend
-            xAxisG.call(xAxis);
+            xAxisG
+                .call(xAxis)
+                .selectAll('.tick line')
+                .remove();
 
             // Render the y-axis legend
             yAxisG.call(yAxis);
