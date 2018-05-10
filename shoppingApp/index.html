@@ -64,27 +64,28 @@
 
         const render = function (selection, data) {
 
+            // Create a data join.
             const text =
                 selection
                     .selectAll('text')
-                    .data(data)
-                        // Update Phase
-                        .text(textValue)    // Update text in update phase, too!
+                    .data(data);
             
             // Exit (Remove) Phase
             text
                 .exit()
                     .remove();
             
-            // Enter (New Data) Phase
             text
+                // Enter (New Data) Phase
                 .enter()   
                     .append('text')
-                    .text(textValue)    // This will be used for NEW elements
-                                        // only!
                     .attr('y', function (d, i) {
                         return verticalSpacing * i;
-                    });
+                    })
+                // Common code for BOTH Enter AND Update Phase!
+                .merge(text)
+                    // Will execute for new and updated items.
+                    .text(textValue) ;
         }
 
         // Groceries
