@@ -64,13 +64,21 @@
 
         const render = function (selection, data) {
 
-            selection
-                .selectAll('text')
-                .data(data)
-                    // Update Phase
-                    .text(textValue)    // Update text in update phase, too!
-                .enter()
-                    // New Data Phase
+            const text =
+                selection
+                    .selectAll('text')
+                    .data(data)
+                        // Update Phase
+                        .text(textValue)    // Update text in update phase, too!
+            
+            // Exit (Remove) Phase
+            text
+                .exit()
+                    .remove();
+            
+            // Enter (New Data) Phase
+            text
+                .enter()   
                     .append('text')
                     .text(textValue)    // This will be used for NEW elements
                                         // only!
@@ -97,6 +105,7 @@
         }
         , 1000);
 
+        // Change the price of eggs ie. update an existing item.
         setTimeout(function () {
 
             render(g, [
@@ -106,6 +115,27 @@
         }
         , 2000);
 
+        // Add another new item we are going to remove later.
+        setTimeout(function () {
+
+            render(g, [
+                { name: 'Milk', price: 3 },
+                { name: 'Eggs', price: 2 },
+                { name: 'Cupcakes', price: 5 }
+            ]);
+        }
+        , 3000);
+
+        // Now the cupcakes are gone (removed).
+        setTimeout(function () {
+
+            render(g, [
+                { name: 'Milk', price: 3 },
+                { name: 'Eggs', price: 2 },
+            ]);
+        }
+        , 4000);
+    
     </script>
 
 </body>
