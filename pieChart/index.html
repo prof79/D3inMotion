@@ -81,6 +81,7 @@
 
         // Pie radius
         const radius = (d3.min([innerWidth, innerHeight])) / 2;
+        const innerRadius = radius / 4;
 
         // Create a pie chart generator.
         const pie = d3.pie().value(pieValue);
@@ -124,8 +125,7 @@
             // religion, population
             dataRow.religion = dataRow.religion;
             dataRow.population = +dataRow.population;
-            dataRow.path = {};
-
+            
             return dataRow;
         };
 
@@ -136,11 +136,6 @@
             // Generate pie arcs using the data provided.
             const arcs = pie(data);
 
-            for (var index = 0; index < data.length; ++index) {
-
-                data[index].path = arc(arcs[index]);
-            }
-         
             // Configure the color scale.
             colorScale
                 .domain(data.map(labelValue))
@@ -150,21 +145,19 @@
                 d3
                 .legendColor()
                 .scale(colorScale)
-                .labels(data.map(labelValue));
+                .labels(colorScale.domain());
 
             group
                .selectAll('path')
-               .data(data)
+               .data(arcs)
                .enter()
                .append('path')
                .attr('transform', function (d) {
                    return 'translate(' + radius + ' ' + radius + ')';
                })
-               .attr('d', function (d) {
-                   return d.path;
-               })
+               .attr('d', arc)
                .attr('fill', function (d) {
-                   return colorScale(labelValue(d));
+                   return colorScale(labelValue(d.data));
                });
 
             // Render the color legend
