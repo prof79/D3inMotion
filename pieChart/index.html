@@ -81,7 +81,7 @@
 
         // Pie radius
         const radius = (d3.min([innerWidth, innerHeight])) / 2;
-        const innerRadius = radius / 4;
+        const innerRadius = radius / 2;
 
         // Create a pie chart generator.
         const pie = d3.pie().value(pieValue);
@@ -90,7 +90,7 @@
         const arc =
             d3
             .arc()
-            .innerRadius(0)
+            .innerRadius(innerRadius)
             .outerRadius(radius);
         
         const group =
@@ -125,7 +125,7 @@
             // religion, population
             dataRow.religion = dataRow.religion;
             dataRow.population = +dataRow.population;
-            
+
             return dataRow;
         };
 
