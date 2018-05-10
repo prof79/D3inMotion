@@ -42,6 +42,11 @@
             d3
             .select('svg');
 
+        const width = +svg.attr('width');
+        const height = +svg.attr('height');
+        const innerWidth = width - margin.left - margin.right;
+        const innerHeight = height - margin.top - margin.bottom;
+
         const g =
             svg
             .append('g')
@@ -49,9 +54,21 @@
                 return 'translate(' + margin.left + ' ' + margin.top + ')';
             });
 
+        const textValue = function (d) {
+            return d.name + ' $' + d.price;
+        }
+
+        // Groceries
+        const shoppingCart = [
+          { name: 'Milk', price: 3 } 
+        ];
+
         g
+        .selectAll('text')
+        .data(shoppingCart)
+        .enter()
         .append('text')
-        .text('Milk $3');
+        .text(textValue);
 
     </script>
 
