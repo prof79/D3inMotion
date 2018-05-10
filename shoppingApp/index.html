@@ -54,6 +54,9 @@
                 return 'translate(' + margin.left + ' ' + margin.top + ')';
             });
 
+        // Vertical spacing for item text.
+        const verticalSpacing = 56;
+
         // Nicely format a grocery item.
         const textValue = function (d) {
             return d.name + ' $' + d.price;
@@ -66,7 +69,10 @@
                 .data(data)
                 .enter()
                 .append('text')
-                .text(textValue);
+                .text(textValue)
+                .attr('y', function (d, i) {
+                    return verticalSpacing * i;
+                });
         }
 
         // Groceries
@@ -75,6 +81,17 @@
         ];
 
         render(g, shoppingCart);
+
+        // Push a new item onto the list after 2 seconds.
+        setTimeout( function () {
+            
+            shoppingCart.push(
+                { name: 'Eggs', price: 20 }
+            );
+
+            render(g, shoppingCart);
+        }
+        , 2000);
 
     </script>
 
