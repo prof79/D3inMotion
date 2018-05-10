@@ -30,7 +30,7 @@
         .axis-label
         {
             font-size: 28pt;
-            fill: #aa7;
+            fill: #887;
             font-family: sans-serif;
         }
 
@@ -50,28 +50,27 @@
 
     <script>
     
-        const margin = { left: 120, right: 50, top: 50, bottom: 100 };
-
-        // Circle radius
-        const r = 10;
+        const margin = { left: 50, right: 50, top: 50, bottom: 50 };
 
         // Helper accessors and axis labes
 
-        const xLabel = 'Religion';
+        const labelLabel = 'Religion';
 
-        const xValue = function (d) {
+        const labelValue = function (d) {
             return d.religion;
         };
 
-        const yLabel = 'Population';
+        const pieLabel = 'Population';
 
-        const yValue = function (d) {
+        const pieValue = function (d) {
             return d.population;
         };
 
         // The data values will be scaled linearly in x and y.
-        const xScale = d3.scalePoint();
-        const yScale = d3.scaleLinear();
+        const dataScale = d3.scalePoint();
+
+        // Prepare a color scale for the pie segments.
+        const colorScale = d3.scaleOrdinal();
 
         const svg = d3.select('svg');
 
@@ -80,6 +79,19 @@
         const innerWidth = width - margin.left - margin.right;
         const innerHeight = height - margin.top - margin.bottom;
 
+        // Pie radius
+        const radius = (d3.min([innerWidth, innerHeight])) / 2;
+
+        // Create a pie chart generator.
+        const pie = d3.pie().value(pieValue);
+
+        // Create an arc generator. Mind to give a radius.
+        const arc =
+            d3
+            .arc()
+            .innerRadius(0)
+            .outerRadius(radius);
+        
         const group =
             svg
             .append('g')
@@ -87,62 +99,24 @@
                 return 'translate(' + margin.left + ' ' + margin.top + ')';
             });
 
-        // Separate child group for the x-axis
-        // We also need to move (translate) it down to the bottom.
-        const xAxisG =
+        // Separate child group for the axes
+        
+        const colorG =
             group
             .append('g')
             .attr('transform', function (d) {
-                return 'translate(0 ' + innerHeight + ')';
+                return 'translate(' + (radius * 2 + 50) + ' ' + 100 + ')';
             });
 
-        // Separate child group for the y-axis
-        const yAxisG =
-            group
-            .append('g');
-        
         // Add labels to the axes
 
-        xAxisG
+        colorG
             .append('text')
-            .text(xLabel)
+            .text(pieLabel)
             .attr('class', 'axis-label')
             .attr('transform', function (d) {
-                return 'translate(' + (innerWidth / 2) + ' ' + 80 + ')';
-            })
-            .style('text-anchor', 'middle');
-
-        yAxisG
-            .append('text')
-            .text(yLabel)
-            .attr('class', 'axis-label')
-            .attr('x', -innerHeight / 2)
-            .attr('y', -80)
-            .attr('transform', function (d) {
-                return 'rotate(-90)';
-            })
-            .style('text-anchor', 'middle');
-
-        // Define x-axis legend for our plot
-        const xAxis =
-            d3
-            .axisBottom()
-            .scale(xScale)
-            .tickPadding(15)
-            .tickSize(-innerHeight);
-
-        const yTicks = 5;
-
-        // Define y-axis legend for our plot
-        // Only show 5 tick marks.
-        const yAxis =
-            d3
-            .axisLeft()
-            .scale(yScale)
-            .ticks(yTicks)
-            .tickPadding(15)
-            .tickSize(-innerWidth)
-            .tickFormat(d3.format('.0s'));
+                return 'translate(0 ' + (-26) + ')';
+            });
         
         const rowInit = function (dataRow) {
 
@@ -150,50 +124,51 @@
             // religion, population
             dataRow.religion = dataRow.religion;
             dataRow.population = +dataRow.population;
+            dataRow.path = {};
 
             return dataRow;
         };
 
         d3.csv('religionWorldTotals.csv', rowInit, function (data) {
 
-            xScale
-                .domain(data.map(xValue))
-                .range([
-                    0,
-                    innerWidth
-                ]);
-            
-            yScale
-                .domain(d3.extent(data, yValue))
-                // Invert y-axis to be like in math (computer screen has
-                // (top, left) as (0, 0) with y getting positive downwards)
-                .range([
-                    innerHeight,
-                    0
-                ])
-                .nice();
-                        
+            console.log(data.length);
+
+            // Generate pie arcs using the data provided.
+            const arcs = pie(data);
+
+            for (var index = 0; index < data.length; ++index) {
+
+                data[index].path = arc(arcs[index]);
+            }
+         
+            // Configure the color scale.
+            colorScale
+                .domain(data.map(labelValue))
+                .range(d3.schemePaired);
+
+            const colorLegend =
+                d3
+                .legendColor()
+                .scale(colorScale)
+                .labels(data.map(labelValue));
+
             group
-               .selectAll('circle')
+               .selectAll('path')
                .data(data)
                .enter()
-               .append('circle')
-               .attr('r', r)
-               .attr('cx', function (d) {
-                    return xScale(xValue(d));
+               .append('path')
+               .attr('transform', function (d) {
+                   return 'translate(' + radius + ' ' + radius + ')';
                })
-               .attr('cy', function (d) {
-                    return yScale(yValue(d));
+               .attr('d', function (d) {
+                   return d.path;
                })
-               .attr('opacity', 0.6);
-            
-            // Render the x-axis legend
-            xAxisG.call(xAxis);
+               .attr('fill', function (d) {
+                   return colorScale(labelValue(d));
+               });
 
-            // Render the y-axis legend
-            yAxisG.call(yAxis);
-
-            console.log(data);
+            // Render the color legend
+            colorG.call(colorLegend);
         });
 
     </script>
