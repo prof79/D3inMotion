@@ -54,8 +54,19 @@
                 return 'translate(' + margin.left + ' ' + margin.top + ')';
             });
 
+        // Nicely format a grocery item.
         const textValue = function (d) {
             return d.name + ' $' + d.price;
+        }
+
+        const render = function (selection, data) {
+
+            selection
+                .selectAll('text')
+                .data(data)
+                .enter()
+                .append('text')
+                .text(textValue);
         }
 
         // Groceries
@@ -63,12 +74,7 @@
           { name: 'Milk', price: 3 } 
         ];
 
-        g
-        .selectAll('text')
-        .data(shoppingCart)
-        .enter()
-        .append('text')
-        .text(textValue);
+        render(g, shoppingCart);
 
     </script>
 
