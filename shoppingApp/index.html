@@ -67,12 +67,16 @@
             selection
                 .selectAll('text')
                 .data(data)
+                    // Update Phase
+                    .text(textValue)    // Update text in update phase, too!
                 .enter()
-                .append('text')
-                .text(textValue)
-                .attr('y', function (d, i) {
-                    return verticalSpacing * i;
-                });
+                    // New Data Phase
+                    .append('text')
+                    .text(textValue)    // This will be used for NEW elements
+                                        // only!
+                    .attr('y', function (d, i) {
+                        return verticalSpacing * i;
+                    });
         }
 
         // Groceries
@@ -90,6 +94,15 @@
             );
 
             render(g, shoppingCart);
+        }
+        , 1000);
+
+        setTimeout(function () {
+
+            render(g, [
+                { name: 'Milk', price: 3 },
+                { name: 'Eggs', price: 2 }
+            ]);
         }
         , 2000);
 
