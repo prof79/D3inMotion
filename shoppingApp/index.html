@@ -98,58 +98,64 @@
                 .domain(data.map(itemName))
                 .range([0, data.length * verticalSpacing]);
 
-            // Bars behind text data join.
-            const bars =
+            // Create groups for all bar-text pairs.
+            // This and what follows is the general update pattern.
+            const subGroups =
                 selection
-                    .selectAll('rect')
+                    .selectAll('g')
                     .data(data);
-            
-            // Create a data join.
-            const text =
-                selection
-                    .selectAll('text')
-                    .data(data);
-            
-            // Exit (Remove) Phase
-            bars
-                .exit()
-                    .remove();
-            
-            text
-                .exit()
-                    .remove();
-            
-            bars
-                .enter()
-                    .append('rect')
-                    .attr('fill', 'steelblue')
-                    .attr('opacity', 0.6)
-                    .attr('x', 0)
-                    .attr('y', function (d) {
-                        return yScale(itemName(d));
-                    })
-                .merge(bars)
-                    .attr('width', function (d) {
-                        return xScale(itemPrice(d));
-                    })
-                    .attr('height', function (d) {
-                        return yScale.bandwidth();
-                    })
-                    ;
 
-            text
-                // Enter (New Data) Phase
-                .enter()   
-                    .append('text')
-                    .attr('y', function (d) {
-                        return yScale(itemName(d)) + yScale.bandwidth() / 2;
+            subGroups
+                .exit()
+                    .remove();
+            
+            const subGroupsEnter =
+                subGroups
+                    .enter()
+                        .append('g');
+
+            subGroups
+                .merge(subGroupsEnter)
+                    .attr('transform', function (d) {
+                        return 'translate('
+                            + 0
+                            + ' '
+                            + (yScale(itemName(d)))
+                            + ')';
                     })
-                    .attr('dx', '0.1em')
-                    .attr('dy', '0.32em')
-                // Common code for BOTH Enter AND Update Phase!
-                .merge(text)
-                    // Will execute for new and updated items.
-                    .text(textValue) ;
+
+            // Bars behind text data join.
+            // Nested general update pattern in action.
+            const bars =
+                subGroupsEnter
+                    .append('rect')
+                        .attr('fill', 'steelblue')
+                        .attr('opacity', 0.6)
+                    // Select what already had been there.
+                    // This gets the update selection of already existing
+                    // rect elements.
+                    .merge(subGroups.select('rect'))
+                        .attr('width', function (d) {
+                            return xScale(itemPrice(d));
+                        })
+                        .attr('height', function (d) {
+                            return yScale.bandwidth();
+                        })
+                    ;
+            
+            // Item names.
+            // Nested general update pattern in action.
+            const text =
+                subGroupsEnter
+                    .append('text')
+                        .attr('dx', '0.1em')
+                        .attr('dy', '0.94em')
+                    // Select what already had been there.
+                    // This gets the update selection of already existing
+                    // text elements.
+                    .merge(subGroups.select('text'))
+                        .text(textValue)
+                    ;
         }
 
         // Groceries
