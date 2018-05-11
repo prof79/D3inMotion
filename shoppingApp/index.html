@@ -86,6 +86,11 @@
 
         const render = function (selection, data) {
 
+            // Sort the data descending by price.
+            data.sort(function (a, b) {
+                return d3.descending(itemPrice(a), itemPrice(b));
+            });
+
             // We will use vertical bars for visualization.
 
             // X - bar width, price scaled to pixels
