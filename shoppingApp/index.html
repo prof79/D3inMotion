@@ -178,54 +178,22 @@
                     ;
         }
 
-        // Groceries
-        const shoppingCart = [
-            { name: 'Milk', price: 3 } 
-        ];
+        // "Re-play" the History of a Groceries Shopping Cart
+        d3.json('data.json', function (data) {
 
-        render(g, shoppingCart);
+            console.log(data);
 
-        // Push a new item onto the list after 2 seconds.
-        setTimeout( function () {
-            
-            shoppingCart.push(
-                { name: 'Eggs', price: 20 }
-            );
+            data.forEach(function (row, index) {
 
-            render(g, shoppingCart);
-        }
-        , 1000);
+                // The array index will serve as a time-step for
+                // applying changes to the cart.
+                setTimeout(function () {
 
-        // Change the price of eggs ie. update an existing item.
-        setTimeout(function () {
-
-            render(g, [
-                { name: 'Milk', price: 3 },
-                { name: 'Eggs', price: 2 }
-            ]);
-        }
-        , 2000);
-
-        // Add another new item we are going to remove later.
-        setTimeout(function () {
-
-            render(g, [
-                { name: 'Milk', price: 3 },
-                { name: 'Eggs', price: 2 },
-                { name: 'Cupcakes', price: 5 }
-            ]);
-        }
-        , 3000);
-
-        // Now the cupcakes are gone (removed).
-        setTimeout(function () {
-
-            render(g, [
-                { name: 'Milk', price: 3 },
-                { name: 'Eggs', price: 2 },
-            ]);
-        }
-        , 4000);
+                    render(g, row);
+                }
+                , index * 1000);
+            });
+        });
     
     </script>
 

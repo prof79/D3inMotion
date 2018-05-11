@@ -1,0 +1,154 @@
+[
+    [
+      { "name": "Milk", "price": 3 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 20 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Cupcakes", "price": 5 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Cookies", "price": 6 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 },
+      { "name": "Smoked Salmon", "price": 14.75 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 },
+      { "name": "Smoked Salmon", "price": 14.75 },
+      { "name": "Broccoli", "price": 3.65 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 },
+      { "name": "Smoked Salmon", "price": 14.75 },
+      { "name": "Broccoli", "price": 3.65 },
+      { "name": "Coffee", "price": 5.99 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 },
+      { "name": "Smoked Salmon", "price": 14.75 },
+      { "name": "Broccoli", "price": 3.65 },
+      { "name": "Coffee", "price": 5.99 },
+      { "name": "Sugar", "price": 9.98 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 },
+      { "name": "Smoked Salmon", "price": 14.75 },
+      { "name": "Broccoli", "price": 3.65 },
+      { "name": "Coffee", "price": 5.99 },
+      { "name": "Sugar", "price": 9.98 },
+      { "name": "Mozzarella Cheese", "price": 4 }
+    ],
+    [
+      { "name": "Milk", "price": 3 },
+      { "name": "Eggs", "price": 2 },
+      { "name": "Apples", "price": 4 },
+      { "name": "Bread", "price": 4 },
+      { "name": "Bananas", "price": 1 },
+      { "name": "Onions", "price": 2 },
+      { "name": "Garlic", "price": 1 },
+      { "name": "Smoked Salmon", "price": 14.75 },
+      { "name": "Broccoli", "price": 3.65 },
+      { "name": "Coffee", "price": 5.99 },
+      { "name": "Sugar", "price": 9.98 },
+      { "name": "Mozzarella Cheese", "price": 4 },
+      { "name": "Tomatoes", "price": 3 }
+    ]
+  ]
+  
