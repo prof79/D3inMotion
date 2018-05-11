@@ -19,7 +19,7 @@
         svg text
         {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 32pt;
+            font-size: 30pt;
         }
 
     </style>
@@ -54,8 +54,30 @@
                 return 'translate(' + margin.left + ' ' + margin.top + ')';
             });
 
+        // Y (vertical axis) will be a band scale.
+        const yScale =
+            d3
+            .scaleBand()
+            .paddingInner(0.08)
+            // Outer padding must be half of inner ... but why?
+            // Maybe because of number of items and resulting spacing ...
+            .paddingOuter(0.04);
+
+        // X (horizontal axis) will be a linear, price-based scale.
+        const xScale = d3.scaleLinear();
+        
         // Vertical spacing for item text.
         const verticalSpacing = 56;
+
+        // Accessor for item name.
+        const itemName = function (d) {
+            return d.name;
+        }
+
+        // Accessor for item price.
+        const itemPrice = function (d) {
+            return d.price;
+        }
 
         // Nicely format a grocery item.
         const textValue = function (d) {
@@ -64,6 +86,24 @@
 
         const render = function (selection, data) {
 
+            // We will use vertical bars for visualization.
+
+            // X - bar width, price scaled to pixels
+            xScale
+                .domain([0, d3.max(data, itemPrice)])
+                .range([0, innerWidth]);
+            
+            // Y - bar height, even portions based on number of elements.
+            yScale
+                .domain(data.map(itemName))
+                .range([0, data.length * verticalSpacing]);
+
+            // Bars behind text data join.
+            const bars =
+                selection
+                    .selectAll('rect')
+                    .data(data);
+            
             // Create a data join.
             const text =
                 selection
@@ -71,17 +111,41 @@
                     .data(data);
             
             // Exit (Remove) Phase
-            text
+            bars
                 .exit()
                     .remove();
             
             text
+                .exit()
+                    .remove();
+            
+            bars
+                .enter()
+                    .append('rect')
+                    .attr('fill', 'steelblue')
+                    .attr('opacity', 0.6)
+                    .attr('x', 0)
+                    .attr('y', function (d) {
+                        return yScale(itemName(d));
+                    })
+                .merge(bars)
+                    .attr('width', function (d) {
+                        return xScale(itemPrice(d));
+                    })
+                    .attr('height', function (d) {
+                        return yScale.bandwidth();
+                    })
+                    ;
+
+            text
                 // Enter (New Data) Phase
                 .enter()   
                     .append('text')
-                    .attr('y', function (d, i) {
-                        return verticalSpacing * i;
+                    .attr('y', function (d) {
+                        return yScale(itemName(d)) + yScale.bandwidth() / 2;
                     })
+                    .attr('dx', '0.1em')
+                    .attr('dy', '0.32em')
                 // Common code for BOTH Enter AND Update Phase!
                 .merge(text)
                     // Will execute for new and updated items.
@@ -90,7 +154,7 @@
 
         // Groceries
         const shoppingCart = [
-          { name: 'Milk', price: 3 } 
+            { name: 'Milk', price: 3 } 
         ];
 
         render(g, shoppingCart);
