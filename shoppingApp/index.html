@@ -19,7 +19,7 @@
         svg text
         {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 30pt;
+            font-size: 28pt;
         }
 
     </style>
@@ -130,7 +130,6 @@
                 subGroupsEnter
                     .append('rect')
                         .attr('fill', 'steelblue')
-                        .attr('opacity', 0.6)
                     // Select what already had been there.
                     // This gets the update selection of already existing
                     // rect elements.
@@ -145,15 +144,36 @@
             
             // Item names.
             // Nested general update pattern in action.
-            const text =
+
+            // Background text ("stroke").
+            const textBackground =
                 subGroupsEnter
                     .append('text')
-                        .attr('dx', '0.1em')
-                        .attr('dy', '0.94em')
+                        .attr('class', 'textBackground')
+                        .attr('dx', '0.2em')
+                        .attr('dy', '1.0em')
+                        .attr('fill', 'none')
+                        .attr('stroke', 'white')
+                        .attr('stroke-width', 5)
+                        .attr('stroke-linejoin', 'round')
                     // Select what already had been there.
                     // This gets the update selection of already existing
                     // text elements.
-                    .merge(subGroups.select('text'))
+                    .merge(subGroups.select('.textBackground'))
+                        .text(textValue)
+                    ;
+            
+            // Foreground text.
+            const textForeground =
+                subGroupsEnter
+                    .append('text')
+                        .attr('class', 'textForeground')
+                        .attr('dx', '0.2em')
+                        .attr('dy', '1.0em')
+                    // Select what already had been there.
+                    // This gets the update selection of already existing
+                    // text elements.
+                    .merge(subGroups.select('.textForeground'))
                         .text(textValue)
                     ;
         }
