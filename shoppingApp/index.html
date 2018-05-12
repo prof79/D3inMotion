@@ -108,7 +108,10 @@
             const subGroups =
                 selection
                     .selectAll('g')
-                    .data(data);
+                    // Animations are usually associated to the array index
+                    // of a data row. Thus we need an explicit key function
+                    // to make animations (transitions) work.
+                    .data(data, itemName);
 
             subGroups
                 .exit()
@@ -117,10 +120,23 @@
             const subGroupsEnter =
                 subGroups
                     .enter()
-                        .append('g');
+                        .append('g')
+                        // This looks like a duplicate but we need initial
+                        // positioning in the Enter Phase to make transitions
+                        // work.
+                        .attr('transform', function (d) {
+                            return 'translate('
+                                + 0
+                                + ' '
+                                + (yScale(itemName(d)))
+                                + ')';
+                        });
 
             subGroups
                 .merge(subGroupsEnter)
+                // Animate changes. Duration is in ms.
+                // What follows the transition (transform) will be animated.
+                .transition().duration(800)
                     .attr('transform', function (d) {
                         return 'translate('
                             + 0
@@ -135,15 +151,18 @@
                 subGroupsEnter
                     .append('rect')
                         .attr('fill', 'steelblue')
+                        // Basis for animating the bar width from 0 to x.
+                        .attr('width', 0)
                     // Select what already had been there.
                     // This gets the update selection of already existing
                     // rect elements.
                     .merge(subGroups.select('rect'))
-                        .attr('width', function (d) {
-                            return xScale(itemPrice(d));
-                        })
                         .attr('height', function (d) {
                             return yScale.bandwidth();
+                        })
+                        .transition().duration(800)
+                        .attr('width', function (d) {
+                            return xScale(itemPrice(d));
                         })
                     ;
             
