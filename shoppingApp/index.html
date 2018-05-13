@@ -113,9 +113,16 @@
                     // to make animations (transitions) work.
                     .data(data, itemName);
 
-            subGroups
-                .exit()
-                    .remove();
+            // Create an exit group for exit animations.
+            const subGroupsExit =
+                subGroups
+                    .exit();
+            
+            subGroupsExit
+                // This is necessary to buy us some time for the bars
+                // (rects) to shrink on removal.
+                .transition().duration(800)
+                .remove();
             
             const subGroupsEnter =
                 subGroups
@@ -166,6 +173,12 @@
                         })
                     ;
             
+            // Shrink the bar of removed items on exit.
+            subGroupsExit
+                .select('rect')
+                .transition().duration(800)
+                .attr('width', 0);
+
             // Item names.
             // Nested general update pattern in action.
 
