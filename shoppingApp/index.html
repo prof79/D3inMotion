@@ -33,48 +33,17 @@
     <svg width="500" height="960"></svg>
 
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <!-- Include our library. -->
+    <script src="visualList.js"></script>
 
     <script>
     
-        const margin = { left: 50, top: 50, right: 20, bottom: 50 };
-
-        const svg =
-            d3
-            .select('svg');
-
-        const width = +svg.attr('width');
-        const height = +svg.attr('height');
-        const innerWidth = width - margin.left - margin.right;
-        const innerHeight = height - margin.top - margin.bottom;
-
-        const g =
-            svg
-            .append('g')
-            .attr('transform', function (d) {
-                return 'translate(' + margin.left + ' ' + margin.top + ')';
-            });
-
-        // Y (vertical axis) will be a band scale.
-        const yScale =
-            d3
-            .scaleBand()
-            .paddingInner(0.08)
-            // Outer padding must be half of inner ... but why?
-            // Maybe because of number of items and resulting spacing ...
-            .paddingOuter(0.04);
-
-        // X (horizontal axis) will be a linear, price-based scale.
-        const xScale = d3.scaleLinear();
-        
-        // Vertical spacing for item text.
-        const verticalSpacing = 56;
-
-        // Accessor for item name.
+        // Accessor for item name (y).
         const itemName = function (d) {
             return d.name;
         }
 
-        // Accessor for item price.
+        // Accessor for item price (x).
         const itemPrice = function (d) {
             return d.price;
         }
@@ -82,140 +51,6 @@
         // Nicely format a grocery item.
         const textValue = function (d) {
             return d.name + ' $' + d.price;
-        }
-
-        const render = function (selection, data) {
-
-            // Sort the data descending by price.
-            data.sort(function (a, b) {
-                return d3.descending(itemPrice(a), itemPrice(b));
-            });
-
-            // We will use vertical bars for visualization.
-
-            // X - bar width, price scaled to pixels
-            xScale
-                .domain([0, d3.max(data, itemPrice)])
-                .range([0, innerWidth]);
-            
-            // Y - bar height, even portions based on number of elements.
-            yScale
-                .domain(data.map(itemName))
-                .range([0, data.length * verticalSpacing]);
-
-            // Define our default transition and duration.
-            const transition = d3.transition().duration(800);
-
-            // Create groups for all bar-text pairs.
-            // This and what follows is the general update pattern.
-            const subGroups =
-                selection
-                    .selectAll('g')
-                    // Animations are usually associated to the array index
-                    // of a data row. Thus we need an explicit key function
-                    // to make animations (transitions) work.
-                    .data(data, itemName);
-
-            // Create an exit group for exit animations.
-            const subGroupsExit =
-                subGroups
-                    .exit();
-            
-            subGroupsExit
-                // This is necessary to buy us some time for the bars
-                // (rects) to shrink on removal.
-                .transition(transition)
-                .remove();
-            
-            const subGroupsEnter =
-                subGroups
-                    .enter()
-                        .append('g')
-                        // This looks like a duplicate but we need initial
-                        // positioning in the Enter Phase to make transitions
-                        // work.
-                        .attr('transform', function (d) {
-                            return 'translate('
-                                + 0
-                                + ' '
-                                + (yScale(itemName(d)))
-                                + ')';
-                        });
-
-            subGroups
-                .merge(subGroupsEnter)
-                // Animate changes. Duration is in ms.
-                // What follows the transition (transform) will be animated.
-                .transition(transition)
-                    .attr('transform', function (d) {
-                        return 'translate('
-                            + 0
-                            + ' '
-                            + (yScale(itemName(d)))
-                            + ')';
-                    })
-
-            // Bars behind text data join.
-            // Nested general update pattern in action.
-            const bars =
-                subGroupsEnter
-                    .append('rect')
-                        .attr('fill', 'steelblue')
-                        // Basis for animating the bar width from 0 to x.
-                        .attr('width', 0)
-                    // Select what already had been there.
-                    // This gets the update selection of already existing
-                    // rect elements.
-                    .merge(subGroups.select('rect'))
-                        .attr('height', function (d) {
-                            return yScale.bandwidth();
-                        })
-                        .transition().duration(800)
-                        .attr('width', function (d) {
-                            return xScale(itemPrice(d));
-                        })
-                    ;
-            
-            // Shrink the bar of removed items on exit.
-            subGroupsExit
-                .select('rect')
-                .transition(transition)
-                .attr('width', 0);
-
-            // Item names.
-            // Nested general update pattern in action.
-
-            // Background text ("stroke").
-            const textBackground =
-                subGroupsEnter
-                    .append('text')
-                        .attr('class', 'textBackground')
-                        .attr('dx', '0.2em')
-                        .attr('dy', '1.0em')
-                        .attr('fill', 'none')
-                        .attr('stroke', 'white')
-                        .attr('stroke-width', 5)
-                        .attr('stroke-linejoin', 'round')
-                    // Select what already had been there.
-                    // This gets the update selection of already existing
-                    // text elements.
-                    .merge(subGroups.select('.textBackground'))
-                        .text(textValue)
-                    ;
-            
-            // Foreground text.
-            const textForeground =
-                subGroupsEnter
-                    .append('text')
-                        .attr('class', 'textForeground')
-                        .attr('dx', '0.2em')
-                        .attr('dy', '1.0em')
-                    // Select what already had been there.
-                    // This gets the update selection of already existing
-                    // text elements.
-                    .merge(subGroups.select('.textForeground'))
-                        .text(textValue)
-                    ;
         }
 
         // "Re-play" the History of a Groceries Shopping Cart
@@ -228,8 +63,25 @@
                 // The array index will serve as a time-step for
                 // applying changes to the cart.
                 setTimeout(function () {
-
-                    render(g, row);
+                    
+                    d3.select('svg').call(visualList, {
+                        
+                        data: row,
+                        xValue: itemPrice,
+                        yValue: itemName,
+                        displayValue: textValue,
+                        margin: {
+                            left: 50,
+                            top: 50,
+                            right: 50,
+                            bottom: 50
+                        },
+                        barPadding: 0.08,
+                        // Vertical spacing for item text.
+                        verticalSpacing: 56,
+                        // Animation duration in ms
+                        transitionDuration: 800,
+                    });
                 }
                 , index * 1000);
             });
