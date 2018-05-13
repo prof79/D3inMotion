@@ -103,6 +103,9 @@
                 .domain(data.map(itemName))
                 .range([0, data.length * verticalSpacing]);
 
+            // Define our default transition and duration.
+            const transition = d3.transition().duration(800);
+
             // Create groups for all bar-text pairs.
             // This and what follows is the general update pattern.
             const subGroups =
@@ -121,7 +124,7 @@
             subGroupsExit
                 // This is necessary to buy us some time for the bars
                 // (rects) to shrink on removal.
-                .transition().duration(800)
+                .transition(transition)
                 .remove();
             
             const subGroupsEnter =
@@ -143,7 +146,7 @@
                 .merge(subGroupsEnter)
                 // Animate changes. Duration is in ms.
                 // What follows the transition (transform) will be animated.
-                .transition().duration(800)
+                .transition(transition)
                     .attr('transform', function (d) {
                         return 'translate('
                             + 0
@@ -176,7 +179,7 @@
             // Shrink the bar of removed items on exit.
             subGroupsExit
                 .select('rect')
-                .transition().duration(800)
+                .transition(transition)
                 .attr('width', 0);
 
             // Item names.
